@@ -14,7 +14,7 @@ public class CarScript : MonoBehaviour {
 
     bool going;
     Vector2Int direction;
-    Vector2Int from, to, next;
+    Vector2Int last, from, to, next;
     float t;
     PuzzleSpace heldPickup;
 
@@ -45,6 +45,7 @@ public class CarScript : MonoBehaviour {
 
     public void Go() {
         going = true;
+        from = Util.INVALID_COOR;
         to = puzzleScript.entryCoors[0];
         if (to.x == -1) direction = new(1, 0);
         else if (to.y == -1) direction = new(0, 1);
@@ -60,13 +61,21 @@ public class CarScript : MonoBehaviour {
 
     void Going() {
         visuals.SetActive(true);
-        t += Time.deltaTime * speed;
+        bool turning = (next - to) != (to - from) || (to - from) != (from - last);
+        if (to == from) turning = false;
+        if (next == to) turning = false;
         while (t >= 1) {
             ArriveAtCoor();
             t--;
         }
-        Vector2 lerpedCoor = Vector2.Lerp(from, to, t);
-        transform.localPosition = new Vector3(lerpedCoor.x, 0, -lerpedCoor.y);
+        // Set transform.
+        if (turning) {
+            float tMult = Util.SetTurningTransform(transform, last, from, to, next, t);
+            t += Time.deltaTime * speed * tMult;
+        } else {
+            Util.SetStraightTransform(transform, from, to, t);
+            t += Time.deltaTime * speed;
+        }
     }
     void ArriveAtCoor() {
         if (from == to) return;
@@ -74,6 +83,11 @@ public class CarScript : MonoBehaviour {
             from = to;
             to = next;
             return;
+        }
+        if (from == Util.INVALID_COOR) {
+            last = to - direction;
+        } else {
+            last = from;
         }
         PuzzleSpace spacePickup = puzzleScript.GetSpace(to);
         if (spacePickup != PuzzleSpace.Empty) {

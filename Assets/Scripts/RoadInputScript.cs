@@ -1,10 +1,9 @@
+using Assets.Code;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RoadInputScript : MonoBehaviour {
-    static Vector2Int INVALID_COOR = new Vector2Int(-999, -999);
-
     public GameObject prefabRoad;
 
     public PuzzleScript puzzleScript;
@@ -37,7 +36,7 @@ public class RoadInputScript : MonoBehaviour {
     }
     void UpdateClick() {
         Vector2Int clickedCoor = GetClickedCoor();
-        if (clickedCoor == INVALID_COOR) return;
+        if (clickedCoor == Util.INVALID_COOR) return;
         if (Input.GetMouseButtonDown(0)) lastClickedCoor = clickedCoor;
         while (clickedCoor.x < lastClickedCoor.x) {
             lastClickedCoor.x--;
@@ -68,7 +67,7 @@ public class RoadInputScript : MonoBehaviour {
             position = transform.InverseTransformPoint(position);
             return new Vector2Int(Mathf.FloorToInt(position.x + 1.5f), Mathf.FloorToInt(-position.z + 1.5f));
         }
-        return INVALID_COOR;
+        return Util.INVALID_COOR;
     }
     void TryToggle(bool horizontal, Vector2Int coor) {
         bool[,] roads = horizontal ? puzzleScript.roadsHorizontal : puzzleScript.roadsVertical;
