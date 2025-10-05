@@ -8,13 +8,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class CarScript : MonoBehaviour {
+    public static CarScript instance;
+
     public PuzzleScript puzzleScript;
     public GameObject visuals;
     public Transform pickupAnchor;
     public SpriteRenderer srSpeech;
     public TMP_Text tmpSpeech;
 
-    public float speed;
     float vSpeechAlpha;
 
     CarState state;
@@ -26,6 +27,7 @@ public class CarScript : MonoBehaviour {
     bool usedActivePickup;
 
     void Start() {
+        instance = this;
         pickupCoors = new List<Vector2Int>();
         srSpeech.SetAlpha(0);
         tmpSpeech.SetAlpha(0);
@@ -33,8 +35,7 @@ public class CarScript : MonoBehaviour {
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
-            if (state != CarState.Waiting) Stop();
-            else Go();
+            TogglePlay();
         }
         if (puzzleScript.entryCoors.Count == 0) {
             visuals.SetActive(false);
@@ -51,11 +52,13 @@ public class CarScript : MonoBehaviour {
             else throw new System.Exception("Entry coor not on edge.");
         }
         if (state == CarState.Crashed) {
-            tmpSpeech.text = "I crashed... :(";
+            tmpSpeech.text = "I crashed. :(";
         } else if (state == CarState.DidntUsePickup) {
-            tmpSpeech.text = "I need to turn before picking another up!";
+            tmpSpeech.text = "I need to turn before collecting another!";
         } else if (state == CarState.LeftIncomplete) {
             tmpSpeech.text = "I left without collecting everything!";
+        } else if (state == CarState.LeftUnused) {
+            tmpSpeech.text = "I need to turn one last time!";
         } else {
             tmpSpeech.text = "";
         }
@@ -64,7 +67,11 @@ public class CarScript : MonoBehaviour {
         tmpSpeech.SetAlpha(a);
     }
 
-    public void Go() {
+    public void TogglePlay() {
+        if (state != CarState.Waiting) Stop();
+        else Go();
+    }
+    void Go() {
         if (state != CarState.Waiting) {
             Stop();
         }
@@ -80,7 +87,7 @@ public class CarScript : MonoBehaviour {
         else throw new System.Exception("Entry coor not on edge.");
         ArriveAtCoor();
     }
-    public void Stop() {
+    void Stop() {
         state = CarState.Waiting;
         t = 0;
         activePickup = PuzzleSpace.Empty;
@@ -98,6 +105,7 @@ public class CarScript : MonoBehaviour {
         // Set transform.
         bool turning = Util.IsTurn(last, from, to) || Util.IsTurn(from, to, next);
         if (to == from) turning = false;
+        float speed = PuzzleUIScript.instance.speedSlider.value;
         if (turning) {
             float tMult = Util.SetTurningTransform(transform, last, from, to, next, t);
             t += Time.deltaTime * speed * tMult;
@@ -129,7 +137,7 @@ public class CarScript : MonoBehaviour {
         from = to;
         if (to == next) {
             if (from.x == -1 || from.y == -1 || from.x == puzzleScript.puzzle.width || from.y == puzzleScript.puzzle.height) {
-                state = Won() ? CarState.Won : CarState.LeftIncomplete;
+                SetEndState();
                 return;
             }
             from = to;
@@ -175,17 +183,21 @@ public class CarScript : MonoBehaviour {
         // Otherwise, just go straight.
         return direction;
     }
-    bool Won() {
-        if (!usedActivePickup) return false;
+    void SetEndState() {
         for (int x = 0; x < puzzleScript.puzzle.width; x++) {
             for (int y = 0; y < puzzleScript.puzzle.width; y++) {
                 Vector2Int coor = new Vector2Int(x, y);
                 if (puzzleScript.GetSpace(coor) != PuzzleSpace.Empty && !pickupCoors.Contains(coor)) {
-                    return false;
+                    state = CarState.LeftIncomplete;
+                    return;
                 }
             }
         }
-        return true;
+        if (!usedActivePickup) {
+            state = CarState.LeftUnused;
+        } else {
+            state = CarState.Won;
+        }
     }
 
     public bool IsGoing() {
@@ -215,4 +227,5 @@ public enum CarState {
     Crashed,
     DidntUsePickup,
     LeftIncomplete,
+    LeftUnused,
 }

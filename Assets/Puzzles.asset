@@ -13,12 +13,25 @@ MonoBehaviour:
   m_Name: Puzzles
   m_EditorClassIdentifier: Assembly-CSharp::Puzzles
   puzzleStrings:
-  - 'r...R.
+  - name: aaaa
+    content: 'r...R.
 
-    .l....
+      .l....
 
-    ..l.ll
+      ..l.ll
 
-    ..r...
+      ..r...
 
-    ...l..'
+      ...l..'
+  - name: test
+    content: '......
+
+      .l..l.
+
+      ......
+
+      ......
+
+      .l..l.
+
+      ......'

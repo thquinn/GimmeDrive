@@ -4,6 +4,8 @@ using System.Drawing;
 using UnityEngine;
 
 public class PuzzleScript : MonoBehaviour {
+    public static PuzzleScript instance;
+
     public GameObject prefabPickup;
     public Material materialGrid;
     public Puzzles puzzles;
@@ -16,10 +18,11 @@ public class PuzzleScript : MonoBehaviour {
     [HideInInspector] public List<Vector2Int> entryCoors;
 
     void Start() {
-        Init(0);
+        instance = this;
+        Init("test");
     }
-    public void Init(int puzzleIndex) {
-        puzzle = new Puzzle(puzzles.puzzleStrings[puzzleIndex]);
+    public void Init(string puzzleName) {
+        puzzle = puzzles.GetPuzzleWithName(puzzleName);
         transform.localPosition = new Vector3((puzzle.width - 1) / -2f, 0, (puzzle.height - 1) / 2f);
         roadsHorizontal = new bool[puzzle.width + 1, puzzle.height + 2];
         roadsVertical = new bool[puzzle.width + 2, puzzle.height + 1];

@@ -1,9 +1,12 @@
 using Assets.Code;
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class RoadInputScript : MonoBehaviour {
+    public static RoadInputScript instance;
+
     public GameObject prefabRoad;
 
     public PuzzleScript puzzleScript;
@@ -11,17 +14,32 @@ public class RoadInputScript : MonoBehaviour {
     Dictionary<Vector2Int, RoadScript> roads;
     DrawState drawState;
     Vector2Int lastClickedCoor;
+    Stack<List<UndoEvent>> undoHistory, redoHistory;
+    List<UndoEvent> currentUndo;
 
     void Start() {
+        instance = this;
         roads = new();
+        undoHistory = new();
+        redoHistory = new();
     }
 
     void Update() {
         if (puzzleScript.puzzle == null) return;
         if (Input.GetMouseButton(0)) {
             UpdateClick();
-        } if (Input.GetMouseButtonUp(0)) {
+        } else if (Input.GetMouseButtonUp(0)) {
+            if (currentUndo != null) {
+                undoHistory.Push(currentUndo);
+                currentUndo = null;
+                redoHistory.Clear();
+            }
             drawState = DrawState.Undetermined;
+        }
+        if (Input.GetKeyDown(KeyCode.Z)) {
+            Undo();
+        } else if (Input.GetKeyDown(KeyCode.Y) || Input.GetKeyDown(KeyCode.X)) {
+            Redo();
         }
         for (int x = -1; x < puzzleScript.puzzle.width + 1; x++) {
             for (int y = -1; y < puzzleScript.puzzle.height + 1; y++) {
@@ -70,7 +88,7 @@ public class RoadInputScript : MonoBehaviour {
         }
         return Util.INVALID_COOR;
     }
-    void TryToggle(bool horizontal, Vector2Int coor) {
+    void TryToggle(bool horizontal, Vector2Int coor, bool undoOperation = false) {
         if (carScript.IsGoing()) return;
         bool[,] roads = horizontal ? puzzleScript.roadsHorizontal : puzzleScript.roadsVertical;
         if (horizontal) {
@@ -82,15 +100,23 @@ public class RoadInputScript : MonoBehaviour {
         bool roadState = roads[coor.x, coor.y];
         bool onEdge = coor.x == 0 || coor.y == 0 || coor.x == roads.GetLength(0) - 1 || coor.y == roads.GetLength(1) - 1;
         if (onEdge && !roadState && puzzleScript.entryCoors.Count >= 2) return;
-        if (drawState == DrawState.Undetermined) {
+        if (!undoOperation && drawState == DrawState.Undetermined) {
             drawState = roadState ? DrawState.Erasing : DrawState.Drawing;
         }
-        if (!roadState && drawState == DrawState.Drawing) {
+        bool drawStateMatch = undoOperation || (!roadState && drawState == DrawState.Drawing) || (roadState && drawState == DrawState.Erasing);
+        bool success = false;
+        if (!roadState && drawStateMatch) {
             roads[coor.x, coor.y] = true;
             if (onEdge) puzzleScript.entryCoors.Add(GetEntryCoor(horizontal, coor));
-        } else if (roadState && drawState == DrawState.Erasing) {
+            success = true;
+        } else if (roadState && drawStateMatch) {
             roads[coor.x, coor.y] = false;
             if (onEdge) puzzleScript.entryCoors.Remove(GetEntryCoor(horizontal, coor));
+            success = true;
+        }
+        if (success && !undoOperation) {
+            if (currentUndo == null) currentUndo = new();
+            currentUndo.Add(new UndoEvent() { horizontal = horizontal, coor = coor });
         }
     }
     Vector2Int GetEntryCoor(bool horizontal, Vector2Int coor) {
@@ -100,8 +126,80 @@ public class RoadInputScript : MonoBehaviour {
         if (!horizontal && coor.y == puzzleScript.puzzle.height - 1) coor.y++;
         return coor;
     }
+
+    public bool CanUndo() {
+        return undoHistory.Count > 0;
+    }
+    public bool CanRedo() {
+        return redoHistory.Count > 0;
+    }
+    public void Undo() {
+        if (undoHistory.Count == 0) return;
+        if (Input.GetMouseButtonDown(0)) return;
+        var undos = undoHistory.Pop();
+        ApplyUndos(undos);
+        redoHistory.Push(undos);
+    }
+    public void Redo() {
+        if (redoHistory.Count == 0) return;
+        if (Input.GetMouseButtonDown(0)) return;
+        var undos = redoHistory.Pop();
+        ApplyUndos(undos);
+        undoHistory.Push(undos);
+    }
+    void ApplyUndos(List<UndoEvent> undos) {
+        foreach (UndoEvent undo in undos) {
+            TryToggle(undo.horizontal, undo.coor, true);
+        }
+    }
+
+    public bool CanClear() {
+        for (int x = 0; x < puzzleScript.roadsHorizontal.GetLength(0); x++) {
+            for (int y = 0; y < puzzleScript.roadsHorizontal.GetLength(1); y++) {
+                if (puzzleScript.roadsHorizontal[x, y]) {
+                    return true;
+                }
+            }
+        }
+        for (int x = 0; x < puzzleScript.roadsVertical.GetLength(0); x++) {
+            for (int y = 0; y < puzzleScript.roadsVertical.GetLength(1); y++) {
+                if (puzzleScript.roadsVertical[x, y]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public void Clear() {
+        if (undoHistory.Count == 0) return;
+        List<UndoEvent> undos = new();
+        for (int x = 0; x < puzzleScript.roadsHorizontal.GetLength(0); x++) {
+            for (int y = 0; y < puzzleScript.roadsHorizontal.GetLength(1); y++) {
+                if (puzzleScript.roadsHorizontal[x, y]) {
+                    TryToggle(true, new Vector2Int(x, y), true);
+                    undos.Add(new UndoEvent() { horizontal = true, coor = new Vector2Int(x, y) });
+                }
+            }
+        }
+        for (int x = 0; x < puzzleScript.roadsVertical.GetLength(0); x++) {
+            for (int y = 0; y < puzzleScript.roadsVertical.GetLength(1); y++) {
+                if (puzzleScript.roadsVertical[x, y]) {
+                    TryToggle(false, new Vector2Int(x, y), true);
+                    undos.Add(new UndoEvent() { horizontal = false, coor = new Vector2Int(x, y) });
+                }
+            }
+        }
+        if (undos.Count > 0) {
+            undoHistory.Push(undos);
+        }
+    }
 }
 
 enum DrawState {
     Undetermined, Drawing, Erasing
+}
+
+struct UndoEvent {
+    public bool horizontal;
+    public Vector2Int coor;
 }
