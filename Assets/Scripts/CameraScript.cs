@@ -9,14 +9,14 @@ public class CameraScript : MonoBehaviour {
     public float sensitivity;
     public float scrollSensitivity;
     public Vector2 zoomRange;
-    float horizontalAngle = 0;
+    float horizontalAngle = -Mathf.PI / 2;
     float verticalAngle = Mathf.PI / 5;
 
     private void Update() {
         // Input.
         distance *= Mathf.Pow(scrollSensitivity, Input.mouseScrollDelta.y);
         distance = Mathf.Clamp(distance, zoomRange.x, zoomRange.y);
-        if (Input.GetMouseButton(1)) {
+        if (Input.GetMouseButton(1) || Input.GetMouseButton(2)) {
             horizontalAngle -= Input.GetAxis("Mouse X") * sensitivity;
             verticalAngle -= Input.GetAxis("Mouse Y") * sensitivity;
             verticalAngle = Mathf.Clamp(verticalAngle, Mathf.PI * .1f, Mathf.PI * .49f);

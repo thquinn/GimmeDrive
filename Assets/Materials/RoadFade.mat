@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Road
+  m_Name: RoadFade
   m_Shader: {fileID: 4800000, guid: acb0a28ed13f04044a6eae64119063aa, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -103,8 +103,8 @@ Material:
     m_Floats:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
-    - _AlphaMaxX: -2
-    - _AlphaMinX: -3
+    - _AlphaMaxX: 0.5
+    - _AlphaMinX: -0.5
     - _AlphaToMask: 0
     - _Blend: 2
     - _BlendModePreserveSpecular: 1

@@ -55,7 +55,7 @@ public class CarScript : MonoBehaviour {
         else if (to.x == puzzleScript.puzzle.width) direction = new(-1, 0);
         else if (to.y == puzzleScript.puzzle.height) direction = new(0, -1);
         else throw new System.Exception("Entry coor not on edge.");
-        t = 0;
+        
         ArriveAtCoor();
     }
     public void Stop() {
@@ -136,9 +136,12 @@ public class CarScript : MonoBehaviour {
     }
 
     public bool PickupActive(Vector2Int coor) {
+        if (!going) return false;
+        if (to == coor && t > .5f) return true;
         return pickupCoors.Count > 0 && pickupCoors[pickupCoors.Count - 1] == coor;
     }
     public bool PickupGone(Vector2Int coor) {
+        if (!going) return false;
         int index = pickupCoors.IndexOf(coor);
         return index >= 0 && index < pickupCoors.Count - 1;
     }

@@ -160,7 +160,9 @@ MonoBehaviour:
   meshRenderer: {fileID: 1343486490209675677}
   srArrows: {fileID: 8694932404695984428}
   srForce: {fileID: 1913527945613273188}
+  materialLeft: {fileID: 2100000, guid: 969c63e93e8ca78488c67b3f921bb263, type: 2}
   materialRight: {fileID: 2100000, guid: 8c3c7c6f121de524f9b81a5a47b3ac8a, type: 2}
+  colorForceLeft: {r: 0, g: 0.3254902, b: 0.42745098, a: 1}
   colorForceRight: {r: 0.44705883, g: 0.3882353, b: 0.15686275, a: 1}
 --- !u!1 &6065715027420835625
 GameObject:

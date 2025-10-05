@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 334b178d204b03746bf636f3f76844aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  materialRoadFade: {fileID: 2100000, guid: bca335193125be043b1d38ecdd95492f, type: 2}
   meshFilter: {fileID: 7332939641201184739}
   meshRenderer: {fileID: 1086031554023047056}
   meshCross: {fileID: -2432090755550338912, guid: ba4bd3b3ad382064aa76e9ee79c49dd9, type: 3}
@@ -93,7 +94,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8519758873776028831}
-  m_Mesh: {fileID: -2432090755550338912, guid: ba4bd3b3ad382064aa76e9ee79c49dd9, type: 3}
+  m_Mesh: {fileID: -2432090755550338912, guid: ed4dff13c0cdb874e895beda6f648a46, type: 3}
 --- !u!23 &1086031554023047056
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -5,12 +5,12 @@ public class PickupScript : MonoBehaviour {
     public MeshRenderer meshRenderer;
     public SpriteRenderer srArrows, srForce;
 
-    public Material materialRight;
-    public Color colorForceRight;
+    public Material materialLeft, materialRight;
+    public Color colorForceLeft, colorForceRight;
 
     PuzzleScript puzzleScript;
     Vector2Int coor;
-    bool right;
+    bool right, picked;
     Vector3 v;
 
     public void Init(PuzzleScript puzzleScript, Vector2Int coor) {
@@ -30,8 +30,13 @@ public class PickupScript : MonoBehaviour {
         transformVisuals.gameObject.SetActive(!carScript.PickupGone(coor));
         if (carScript.PickupActive(coor)) {
             transform.position = Vector3.SmoothDamp(transform.position, carScript.pickupAnchor.position, ref v, 0.1f);
+            if (!picked) {
+                v = new Vector3(0, 10, 0);
+                picked = true;
+            }
         } else {
             transform.localPosition = new Vector3(coor.x, 0, -coor.y);
+            picked = false;
             v = Vector3.zero;
         }
         srArrows.transform.localRotation = Quaternion.Euler(0, right ? 180 : 0, Time.time * 45);

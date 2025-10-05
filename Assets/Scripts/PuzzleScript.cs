@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class PuzzleScript : MonoBehaviour {
     public GameObject prefabPickup;
+    public Material materialGrid;
     public Puzzles puzzles;
 
     public CarScript carScript;
+    public GameObject grid;
 
     [HideInInspector] public Puzzle puzzle;
     [HideInInspector] public bool[,] roadsHorizontal, roadsVertical;
@@ -30,6 +32,9 @@ public class PuzzleScript : MonoBehaviour {
                 }
             }
         }
+        grid.transform.localScale = new Vector3(puzzle.width + 1.5f, puzzle.height + 1.5f, 1);
+        grid.transform.position = Vector3.zero;
+        materialGrid.SetVector("_GridOffset", new Vector2(puzzle.width % 2 == 1 ? 0 : 0.5f, puzzle.height % 2 == 1 ? 0 : 0.5f));
     }
     public bool HasLeftConnection(Vector2Int coor) { return HasConnection(roadsHorizontal, coor.x, coor.y + 1); }
     public bool HasRightConnection(Vector2Int coor) { return HasConnection(roadsHorizontal, coor.x + 1, coor.y + 1); }
