@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 namespace Assets.Code {
     public static class Util {
@@ -78,6 +81,22 @@ namespace Assets.Code {
             transform.localRotation = Quaternion.Lerp(startRotation, endRotation, t);
             if (flipRot) transform.Rotate(0, 180, 0);
             return 1.0f; // TODO: Slow this down?
+        }
+
+        public static void SetAlpha(this SpriteRenderer sr, float a) {
+            Color c = sr.color;
+            c.a = a;
+            sr.color = c;
+        }
+        public static void SetAlpha(this Image image, float a) {
+            Color c = image.color;
+            c.a = a;
+            image.color = c;
+        }
+        public static void SetAlpha(this TMP_Text tmp, float a) {
+            Color c = tmp.color;
+            c.a = a;
+            tmp.color = c;
         }
     }
 }

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using System.Drawing;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,8 +11,11 @@ public class CarScript : MonoBehaviour {
     public PuzzleScript puzzleScript;
     public GameObject visuals;
     public Transform pickupAnchor;
+    public SpriteRenderer srSpeech;
+    public TMP_Text tmpSpeech;
 
     public float speed;
+    float vSpeechAlpha;
 
     CarState state;
     Vector2Int direction;
@@ -23,6 +27,8 @@ public class CarScript : MonoBehaviour {
 
     void Start() {
         pickupCoors = new List<Vector2Int>();
+        srSpeech.SetAlpha(0);
+        tmpSpeech.SetAlpha(0);
     }
 
     void Update() {
@@ -44,6 +50,18 @@ public class CarScript : MonoBehaviour {
             else if (coor.y == puzzleScript.puzzle.height) transform.localRotation = Quaternion.Euler(0, 270, 0);
             else throw new System.Exception("Entry coor not on edge.");
         }
+        if (state == CarState.Crashed) {
+            tmpSpeech.text = "I crashed... :(";
+        } else if (state == CarState.DidntUsePickup) {
+            tmpSpeech.text = "I need to turn before picking another up!";
+        } else if (state == CarState.LeftIncomplete) {
+            tmpSpeech.text = "I left without collecting everything!";
+        } else {
+            tmpSpeech.text = "";
+        }
+        float a = Mathf.SmoothDamp(srSpeech.color.a, tmpSpeech.text.Length > 0 ? 1 : 0, ref vSpeechAlpha, .2f);
+        srSpeech.SetAlpha(a);
+        tmpSpeech.SetAlpha(a);
     }
 
     public void Go() {
@@ -67,6 +85,8 @@ public class CarScript : MonoBehaviour {
         t = 0;
         activePickup = PuzzleSpace.Empty;
         pickupCoors.Clear();
+        srSpeech.SetAlpha(0);
+        tmpSpeech.SetAlpha(0);
     }
 
     void Going() {
@@ -108,6 +128,10 @@ public class CarScript : MonoBehaviour {
         }
         from = to;
         if (to == next) {
+            if (from.x == -1 || from.y == -1 || from.x == puzzleScript.puzzle.width || from.y == puzzleScript.puzzle.height) {
+                state = Won() ? CarState.Won : CarState.LeftIncomplete;
+                return;
+            }
             from = to;
             to = next;
             return;
@@ -151,6 +175,18 @@ public class CarScript : MonoBehaviour {
         // Otherwise, just go straight.
         return direction;
     }
+    bool Won() {
+        if (!usedActivePickup) return false;
+        for (int x = 0; x < puzzleScript.puzzle.width; x++) {
+            for (int y = 0; y < puzzleScript.puzzle.width; y++) {
+                Vector2Int coor = new Vector2Int(x, y);
+                if (puzzleScript.GetSpace(coor) != PuzzleSpace.Empty && !pickupCoors.Contains(coor)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     public bool IsGoing() {
         return state != CarState.Waiting;
@@ -175,7 +211,8 @@ public class CarScript : MonoBehaviour {
 }
 
 public enum CarState {
-    Waiting, Going,
+    Waiting, Going, Won,
     Crashed,
     DidntUsePickup,
+    LeftIncomplete,
 }
