@@ -7,6 +7,7 @@ public class RoadInputScript : MonoBehaviour {
     public GameObject prefabRoad;
 
     public PuzzleScript puzzleScript;
+    public CarScript carScript;
     Dictionary<Vector2Int, RoadScript> roads;
     DrawState drawState;
     Vector2Int lastClickedCoor;
@@ -70,6 +71,7 @@ public class RoadInputScript : MonoBehaviour {
         return Util.INVALID_COOR;
     }
     void TryToggle(bool horizontal, Vector2Int coor) {
+        if (carScript.IsGoing()) return;
         bool[,] roads = horizontal ? puzzleScript.roadsHorizontal : puzzleScript.roadsVertical;
         if (horizontal) {
             if (coor.y == 0 || coor.y == roads.GetLength(1) - 1) return;

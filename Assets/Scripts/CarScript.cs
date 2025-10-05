@@ -13,12 +13,13 @@ public class CarScript : MonoBehaviour {
 
     public float speed;
 
-    bool going;
+    CarState state;
     Vector2Int direction;
     Vector2Int last, from, to, next;
     float t;
     List<Vector2Int> pickupCoors;
-    PuzzleSpace heldPickup;
+    PuzzleSpace activePickup;
+    bool usedActivePickup;
 
     void Start() {
         pickupCoors = new List<Vector2Int>();
@@ -26,14 +27,14 @@ public class CarScript : MonoBehaviour {
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
-            if (!going) Go();
-            else Stop();
+            if (state != CarState.Waiting) Stop();
+            else Go();
         }
         if (puzzleScript.entryCoors.Count == 0) {
             visuals.SetActive(false);
-        } else if (going) {
+        } else if (state == CarState.Going) {
             Going();
-        } else {
+        } else if (state == CarState.Waiting) {
             visuals.SetActive(true);
             Vector2Int coor = puzzleScript.entryCoors[0];
             transform.localPosition = new Vector3(coor.x, 0, -coor.y);
@@ -46,7 +47,11 @@ public class CarScript : MonoBehaviour {
     }
 
     public void Go() {
-        going = true;
+        if (state != CarState.Waiting) {
+            Stop();
+        }
+        if (puzzleScript.entryCoors.Count == 0) return;
+        state = CarState.Going;
         from = Util.INVALID_COOR;
         to = puzzleScript.entryCoors[0];
         next = Util.INVALID_COOR;
@@ -55,12 +60,12 @@ public class CarScript : MonoBehaviour {
         else if (to.x == puzzleScript.puzzle.width) direction = new(-1, 0);
         else if (to.y == puzzleScript.puzzle.height) direction = new(0, -1);
         else throw new System.Exception("Entry coor not on edge.");
-        
         ArriveAtCoor();
     }
     public void Stop() {
-        going = false;
-        heldPickup = PuzzleSpace.Empty;
+        state = CarState.Waiting;
+        t = 0;
+        activePickup = PuzzleSpace.Empty;
         pickupCoors.Clear();
     }
 
@@ -82,10 +87,8 @@ public class CarScript : MonoBehaviour {
         }
     }
     void ArriveAtCoor() {
-        if (from == to) return;
-        if (to == next) {
-            from = to;
-            to = next;
+        if (from == to) {
+            state = CarState.Crashed;
             return;
         }
         if (from == Util.INVALID_COOR) {
@@ -95,13 +98,27 @@ public class CarScript : MonoBehaviour {
         }
         PuzzleSpace spacePickup = GetSpaceWithPath(to);
         if (spacePickup != PuzzleSpace.Empty) {
-            heldPickup = spacePickup;
+            if (activePickup != PuzzleSpace.Empty && !usedActivePickup) {
+                state = CarState.DidntUsePickup;
+                return;
+            }
+            activePickup = spacePickup;
             pickupCoors.Add(to);
+            usedActivePickup = false;
         }
         from = to;
-        PuzzleSpace fromPickup = heldPickup;
+        if (to == next) {
+            from = to;
+            to = next;
+            return;
+        }
+        PuzzleSpace fromPickup = activePickup;
         direction = GetNewDirection(from, fromPickup);
         to = from + direction;
+        // Mark pickup as used.
+        if (Util.IsTurn(last, from, to)) {
+            usedActivePickup = true;
+        }
         // Determine pickup leaving the "to" space.
         PuzzleSpace toPickup = GetSpaceWithPath(to);
         if (toPickup == PuzzleSpace.Empty) {
@@ -135,14 +152,30 @@ public class CarScript : MonoBehaviour {
         return direction;
     }
 
-    public bool PickupActive(Vector2Int coor) {
-        if (!going) return false;
+    public bool IsGoing() {
+        return state != CarState.Waiting;
+    }
+    public bool PickingUp(Vector2Int coor) {
+        if (!IsGoing()) return false;
         if (to == coor && t > .5f) return true;
+        return PickupActive(coor);
+    }
+    public bool PickupActive(Vector2Int coor) {
+        if (!IsGoing()) return false;
         return pickupCoors.Count > 0 && pickupCoors[pickupCoors.Count - 1] == coor;
     }
     public bool PickupGone(Vector2Int coor) {
-        if (!going) return false;
+        if (!IsGoing()) return false;
         int index = pickupCoors.IndexOf(coor);
         return index >= 0 && index < pickupCoors.Count - 1;
     }
+    public bool UsedActivePickup() {
+        return usedActivePickup;
+    }
+}
+
+public enum CarState {
+    Waiting, Going,
+    Crashed,
+    DidntUsePickup,
 }

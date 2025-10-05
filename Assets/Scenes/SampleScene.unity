@@ -303,7 +303,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 613823176}
@@ -10296,7 +10296,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.33
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -10411,6 +10411,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   prefabRoad: {fileID: 6324108257644510397, guid: 9fb26a556cd801a4ca9d6a6199c42679, type: 3}
   puzzleScript: {fileID: 613823175}
+  carScript: {fileID: 552193436}
 --- !u!1 &1460456260
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,11 +29,13 @@ namespace Assets.Code {
             return new(-1, 0);
         }
         public static void SetStraightTransform(Transform transform, Vector2Int from, Vector2Int to, float t) {
+            if (from == to) return;
             Vector2 lerpedCoor = Vector2.Lerp(from, to, t);
             transform.localPosition = new Vector3(lerpedCoor.x, 0, -lerpedCoor.y);
             transform.localRotation = GetRotationFromDirection(to - from);
         }
         public static float SetTurningTransform(Transform transform, Vector2Int last, Vector2Int from, Vector2Int to, Vector2Int next, float t, bool flipRot = false) {
+            if (from == to) return 1;
             if (next == to) {
                 next = to + (to - from);
             }
