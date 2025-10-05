@@ -75,7 +75,6 @@ namespace Assets.Code {
             endRotation = Quaternion.Lerp(startRotation, endRotation, 0.5f);
             transform.localRotation = Quaternion.Lerp(startRotation, endRotation, t);
             if (flipRot) transform.Rotate(0, 180, 0);
-            Debug.Log(t);
             return 1.0f; // TODO: Slow this down?
         }
     }

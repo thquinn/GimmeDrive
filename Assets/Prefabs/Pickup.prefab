@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 969c63e93e8ca78488c67b3f921bb263, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -157,8 +157,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickupScript
   transformVisuals: {fileID: 37662279171396060}
+  meshRenderer: {fileID: 1343486490209675677}
   srArrows: {fileID: 8694932404695984428}
   srForce: {fileID: 1913527945613273188}
+  materialRight: {fileID: 2100000, guid: 8c3c7c6f121de524f9b81a5a47b3ac8a, type: 2}
+  colorForceRight: {r: 0.44705883, g: 0.3882353, b: 0.15686275, a: 1}
 --- !u!1 &6065715027420835625
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,7 +379,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 9374ad8b813303c40bc345278b6461b8, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.3254902, b: 0.42745098, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

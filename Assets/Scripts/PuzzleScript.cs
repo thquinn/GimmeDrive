@@ -18,6 +18,7 @@ public class PuzzleScript : MonoBehaviour {
     }
     public void Init(int puzzleIndex) {
         puzzle = new Puzzle(puzzles.puzzleStrings[puzzleIndex]);
+        transform.localPosition = new Vector3((puzzle.width - 1) / -2f, 0, (puzzle.height - 1) / 2f);
         roadsHorizontal = new bool[puzzle.width + 1, puzzle.height + 2];
         roadsVertical = new bool[puzzle.width + 2, puzzle.height + 1];
         entryCoors = new List<Vector2Int>();
@@ -25,7 +26,7 @@ public class PuzzleScript : MonoBehaviour {
             for (int y = 0; y < puzzle.height; y++) {
                 PuzzleSpace space = puzzle.spaces[x, y];
                 if (space != PuzzleSpace.Empty) {
-                    Instantiate(prefabPickup, transform).GetComponent<PickupScript>().Init(this, x, y);
+                    Instantiate(prefabPickup, transform).GetComponent<PickupScript>().Init(this, new Vector2Int(x, y));
                 }
             }
         }

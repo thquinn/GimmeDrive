@@ -9,6 +9,7 @@ using UnityEngine;
 public class CarScript : MonoBehaviour {
     public PuzzleScript puzzleScript;
     public GameObject visuals;
+    public Transform pickupAnchor;
 
     public float speed;
 
@@ -16,10 +17,11 @@ public class CarScript : MonoBehaviour {
     Vector2Int direction;
     Vector2Int last, from, to, next;
     float t;
+    List<Vector2Int> pickupCoors;
     PuzzleSpace heldPickup;
 
     void Start() {
-        
+        pickupCoors = new List<Vector2Int>();
     }
 
     void Update() {
@@ -47,17 +49,19 @@ public class CarScript : MonoBehaviour {
         going = true;
         from = Util.INVALID_COOR;
         to = puzzleScript.entryCoors[0];
+        next = Util.INVALID_COOR;
         if (to.x == -1) direction = new(1, 0);
         else if (to.y == -1) direction = new(0, 1);
         else if (to.x == puzzleScript.puzzle.width) direction = new(-1, 0);
         else if (to.y == puzzleScript.puzzle.height) direction = new(0, -1);
         else throw new System.Exception("Entry coor not on edge.");
-        heldPickup = PuzzleSpace.Empty;
         t = 0;
         ArriveAtCoor();
     }
     public void Stop() {
         going = false;
+        heldPickup = PuzzleSpace.Empty;
+        pickupCoors.Clear();
     }
 
     void Going() {
@@ -89,16 +93,17 @@ public class CarScript : MonoBehaviour {
         } else {
             last = from;
         }
-        PuzzleSpace spacePickup = puzzleScript.GetSpace(to);
+        PuzzleSpace spacePickup = GetSpaceWithPath(to);
         if (spacePickup != PuzzleSpace.Empty) {
             heldPickup = spacePickup;
+            pickupCoors.Add(to);
         }
         from = to;
         PuzzleSpace fromPickup = heldPickup;
         direction = GetNewDirection(from, fromPickup);
         to = from + direction;
         // Determine pickup leaving the "to" space.
-        PuzzleSpace toPickup = puzzleScript.GetSpace(to);
+        PuzzleSpace toPickup = GetSpaceWithPath(to);
         if (toPickup == PuzzleSpace.Empty) {
             toPickup = fromPickup;
         }
@@ -108,6 +113,10 @@ public class CarScript : MonoBehaviour {
         } else {
             next = to;
         }
+    }
+    PuzzleSpace GetSpaceWithPath(Vector2Int coor) {
+        if (pickupCoors.Contains(coor)) return PuzzleSpace.Empty;
+        return puzzleScript.GetSpace(coor);
     }
     Vector2Int GetNewDirection(Vector2Int arriveCoor, PuzzleSpace pickup) {
         if (pickup == PuzzleSpace.Empty) return direction;
@@ -124,5 +133,13 @@ public class CarScript : MonoBehaviour {
         }
         // Otherwise, just go straight.
         return direction;
+    }
+
+    public bool PickupActive(Vector2Int coor) {
+        return pickupCoors.Count > 0 && pickupCoors[pickupCoors.Count - 1] == coor;
+    }
+    public bool PickupGone(Vector2Int coor) {
+        int index = pickupCoors.IndexOf(coor);
+        return index >= 0 && index < pickupCoors.Count - 1;
     }
 }
