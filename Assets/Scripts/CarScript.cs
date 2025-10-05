@@ -52,6 +52,7 @@ public class CarScript : MonoBehaviour {
         else if (to.x == puzzleScript.puzzle.width) direction = new(-1, 0);
         else if (to.y == puzzleScript.puzzle.height) direction = new(0, -1);
         else throw new System.Exception("Entry coor not on edge.");
+        heldPickup = PuzzleSpace.Empty;
         t = 0;
         ArriveAtCoor();
     }
@@ -61,9 +62,8 @@ public class CarScript : MonoBehaviour {
 
     void Going() {
         visuals.SetActive(true);
-        bool turning = (next - to) != (to - from) || (to - from) != (from - last);
+        bool turning = Util.IsTurn(last, from, to) || Util.IsTurn(from, to, next);
         if (to == from) turning = false;
-        if (next == to) turning = false;
         while (t >= 1) {
             ArriveAtCoor();
             t--;
