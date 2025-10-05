@@ -32,13 +32,13 @@ namespace Assets.Code {
         public static float SetTurningTransform(Transform transform, Vector2Int last, Vector2Int from, Vector2Int to, Vector2Int next, float t, bool flipRot = false) {
             bool turnBefore = from - last != to - from;
             bool turnAfter = to - from != next - to;
+            if (next == to) {
+                next = to + (to - from);
+            }
             // Mirror.
             if (turnBefore) {
-                if (turnAfter && t < .5) {
-                    return SetTurningTransform(transform, next, to, from, last, 1 - t, true);
-                } else {
-                    return SetTurningTransform(transform, next, to, from, last, 1 - t, true);
-                }
+                // TODO: Broken with turns before AND after.
+                return SetTurningTransform(transform, next, to, from, last, 1 - t, true);
             }
             // Straight portion of the turn.
             if (t < STRAIGHT_SIZE) {
@@ -51,6 +51,7 @@ namespace Assets.Code {
             t = (t - STRAIGHT_SIZE) / (1 - STRAIGHT_SIZE);
             float curveRadius = 1 - STRAIGHT_SIZE;
             float radians = 45 * Mathf.Deg2Rad * t;
+            // TODO: Horizontal left turns and vertical right turns are messed up.
             float xOffset = curveRadius * (1 - Mathf.Cos(radians)) * (next.x - to.x);
             lerpedCoor.x += xOffset;
             lerpedCoor.y -= xOffset;
@@ -64,7 +65,7 @@ namespace Assets.Code {
             endRotation = Quaternion.Lerp(startRotation, endRotation, 0.5f);
             transform.localRotation = Quaternion.Lerp(startRotation, endRotation, t);
             if (flipRot) transform.Rotate(0, 180, 0);
-            return 0.1f;
+            return 1.0f; // TODO: Slow this down.
         }
     }
 }
