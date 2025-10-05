@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraScript : MonoBehaviour {
-    public Vector3 lookAt;
     public float distance;
     public float sensitivity;
     public float scrollSensitivity;
     public Vector2 zoomRange;
     float horizontalAngle = -Mathf.PI / 2;
     float verticalAngle = Mathf.PI / 5;
+    Vector3 lookAt, vLookAt;
 
     private void Update() {
         // Input.
@@ -21,6 +21,15 @@ public class CameraScript : MonoBehaviour {
             verticalAngle -= Input.GetAxis("Mouse Y") * sensitivity;
             verticalAngle = Mathf.Clamp(verticalAngle, Mathf.PI * .1f, Mathf.PI * .49f);
         }
+
+        // Look at.
+        int maxPuzzleDimension = 0;
+        Puzzle puzzle = PuzzleScript.instance?.puzzle;
+        if (puzzle != null) {
+            maxPuzzleDimension = Mathf.Max(puzzle.width, puzzle.height);
+        }
+        Vector3 targetLookAt = new Vector3(0, Mathf.InverseLerp(3, 10, maxPuzzleDimension) * -1f, 0);
+        lookAt = Vector3.SmoothDamp(lookAt, targetLookAt, ref vLookAt, 0.25f);
 
         // Set position.
         float xzDistance = distance * Mathf.Cos(verticalAngle);

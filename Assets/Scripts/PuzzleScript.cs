@@ -13,15 +13,17 @@ public class PuzzleScript : MonoBehaviour {
     public CarScript carScript;
     public GameObject grid;
 
+    [HideInInspector] public string puzzleName;
     [HideInInspector] public Puzzle puzzle;
     [HideInInspector] public bool[,] roadsHorizontal, roadsVertical;
     [HideInInspector] public List<Vector2Int> entryCoors;
+    [HideInInspector] public bool won;
 
     void Start() {
         instance = this;
-        Init("test");
     }
     public void Init(string puzzleName) {
+        this.puzzleName = puzzleName;
         puzzle = puzzles.GetPuzzleWithName(puzzleName);
         transform.localPosition = new Vector3((puzzle.width - 1) / -2f, 0, (puzzle.height - 1) / 2f);
         roadsHorizontal = new bool[puzzle.width + 1, puzzle.height + 2];
@@ -47,6 +49,16 @@ public class PuzzleScript : MonoBehaviour {
         if (x < 0 || y < 0 || x >= roads.GetLength(0) || y >= roads.GetLength(1)) return false;
         return roads[x, y];
     }
+    public int PathCount() {
+        int count = 0;
+        foreach (bool road in roadsHorizontal) {
+            if (road) count++;
+        }
+        foreach (bool road in roadsVertical) {
+            if (road) count++;
+        }
+        return count;
+    }
 
     public PuzzleSpace GetSpace(Vector2Int coor) {
         if (coor.x < 0 || coor.x >= puzzle.width || coor.y < 0 || coor.y >= puzzle.height) {
@@ -62,5 +74,10 @@ public class PuzzleScript : MonoBehaviour {
 
     void Update() {
         
+    }
+
+    public void Finish() {
+        instance = null;
+        Destroy(gameObject);
     }
 }

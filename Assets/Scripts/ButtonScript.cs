@@ -12,6 +12,7 @@ public class ButtonScript : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     float vScale, vAlpha;
 
     void Update() {
+        if (PuzzleScript.instance == null) return;
         // Dimming.
         bool clickable = true;
         if (condition == ButtonCondition.Play) {

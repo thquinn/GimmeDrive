@@ -86,6 +86,7 @@ public class CarScript : MonoBehaviour {
         else if (to.y == puzzleScript.puzzle.height) direction = new(0, -1);
         else throw new System.Exception("Entry coor not on edge.");
         ArriveAtCoor();
+        PuzzleScript.instance.won = false;
     }
     void Stop() {
         state = CarState.Waiting;
@@ -197,6 +198,8 @@ public class CarScript : MonoBehaviour {
             state = CarState.LeftUnused;
         } else {
             state = CarState.Won;
+            LevelSelectUIScript.instance.SetPathScore(puzzleScript.puzzleName, puzzleScript.PathCount());
+            PuzzleScript.instance.won = true;
         }
     }
 
