@@ -23,8 +23,8 @@ public class RoadInputScript : MonoBehaviour {
         } if (Input.GetMouseButtonUp(0)) {
             drawState = DrawState.Undetermined;
         }
-        for (int x = -1; x < puzzleScript.puzzle.width; x++) {
-            for (int y = -1; y < puzzleScript.puzzle.height; y++) {
+        for (int x = -1; x < puzzleScript.puzzle.width + 1; x++) {
+            for (int y = -1; y < puzzleScript.puzzle.height + 1; y++) {
                 Vector2Int coor = new Vector2Int(x, y);
                 if (roads.GetValueOrDefault(coor) != null) continue;
                 if (puzzleScript.HasLeftConnection(coor) || puzzleScript.HasRightConnection(coor) || puzzleScript.HasTopConnection(coor) || puzzleScript.HasBottomConnection(coor)) {
@@ -57,17 +57,6 @@ public class RoadInputScript : MonoBehaviour {
         }
         lastClickedCoor = clickedCoor;
     }
-    void TryToggle(bool horizontal, Vector2Int coor) {
-        bool[,] roads = horizontal ? puzzleScript.roadsHorizontal : puzzleScript.roadsVertical;
-        if (coor.x < 0 || coor.y < 0 || coor.x >= roads.GetLength(0) || coor.y >= roads.GetLength(1)) return;
-        bool roadState = roads[coor.x, coor.y];
-        if (drawState == DrawState.Undetermined) {
-            drawState = roadState ? DrawState.Erasing : DrawState.Drawing;
-        }
-        if (!roadState && drawState == DrawState.Drawing) roads[coor.x, coor.y] = true;
-        if (roadState && drawState == DrawState.Erasing) roads[coor.x, coor.y] = false;
-    }
-
     Camera cam;
     Vector2Int GetClickedCoor() {
         if (cam == null) cam = Camera.main;
@@ -80,6 +69,35 @@ public class RoadInputScript : MonoBehaviour {
             return new Vector2Int(Mathf.FloorToInt(position.x + 1.5f), Mathf.FloorToInt(-position.z + 1.5f));
         }
         return INVALID_COOR;
+    }
+    void TryToggle(bool horizontal, Vector2Int coor) {
+        bool[,] roads = horizontal ? puzzleScript.roadsHorizontal : puzzleScript.roadsVertical;
+        if (horizontal) {
+            if (coor.y == 0 || coor.y == roads.GetLength(1) - 1) return;
+        } else {
+            if (coor.x == 0 || coor.x == roads.GetLength(0) - 1) return;
+        }
+        if (coor.x < 0 || coor.y < 0 || coor.x >= roads.GetLength(0) || coor.y >= roads.GetLength(1)) return;
+        bool roadState = roads[coor.x, coor.y];
+        bool onEdge = coor.x == 0 || coor.y == 0 || coor.x == roads.GetLength(0) - 1 || coor.y == roads.GetLength(1) - 1;
+        if (onEdge && !roadState && puzzleScript.entryCoors.Count >= 2) return;
+        if (drawState == DrawState.Undetermined) {
+            drawState = roadState ? DrawState.Erasing : DrawState.Drawing;
+        }
+        if (!roadState && drawState == DrawState.Drawing) {
+            roads[coor.x, coor.y] = true;
+            if (onEdge) puzzleScript.entryCoors.Add(GetEntryCoor(horizontal, coor));
+        } else if (roadState && drawState == DrawState.Erasing) {
+            roads[coor.x, coor.y] = false;
+            if (onEdge) puzzleScript.entryCoors.Remove(GetEntryCoor(horizontal, coor));
+        }
+    }
+    Vector2Int GetEntryCoor(bool horizontal, Vector2Int coor) {
+        coor.x--;
+        coor.y--;
+        if (horizontal && coor.x == puzzleScript.puzzle.width - 1) coor.x++;
+        if (!horizontal && coor.y == puzzleScript.puzzle.height - 1) coor.y++;
+        return coor;
     }
 }
 
