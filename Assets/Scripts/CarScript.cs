@@ -54,11 +54,11 @@ public class CarScript : MonoBehaviour {
         if (state == CarState.Crashed) {
             tmpSpeech.text = "I crashed. :(";
         } else if (state == CarState.DidntUsePickup) {
-            tmpSpeech.text = "I need to turn before collecting another!";
+            tmpSpeech.text = "I need to turn with this star before collecting another!";
         } else if (state == CarState.LeftIncomplete) {
-            tmpSpeech.text = "I left without collecting everything!";
+            tmpSpeech.text = "I left some stars behind!";
         } else if (state == CarState.LeftUnused) {
-            tmpSpeech.text = "I need to turn one last time!";
+            tmpSpeech.text = "I need to turn with this star!";
         } else {
             tmpSpeech.text = "";
         }

@@ -25,7 +25,8 @@ public class Puzzles : ScriptableObject {
 public class Puzzle {
     public int width, height;
     public PuzzleSpace[,] spaces;
-    PuzzleTutorial tutorial;
+    public PuzzleTutorial tutorial;
+
     public Puzzle(string puzzleString) {
         List<string> lines = new List<string>(puzzleString.Split(new string[] { "\r\n", "\r", "\n" }, System.StringSplitOptions.None));
         while (lines[lines.Count - 1].Contains(' ')) {
@@ -50,7 +51,4 @@ public class Puzzle {
 
 public enum PuzzleSpace {
     Empty, Left, LeftForce, Right, RightForce
-}
-public enum PuzzleTutorial {
-    None, Draw, Turn, Wait, Loop, Force
 }

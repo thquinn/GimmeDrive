@@ -41,12 +41,20 @@ MonoBehaviour:
       ....
 
       tut Wait'
+  - name: trisection
+    content: '...
+
+      ...
+
+      r.l
+
+      tut Multi'
   - name: knot theory
-    content: '......
+    content: '.......
 
-      .r..r.
+      .r.r.r.
 
-      ......
+      .......
 
       tut Loop'
   - name: variety pack
