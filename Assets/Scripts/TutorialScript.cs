@@ -19,9 +19,9 @@ public class TutorialScript : MonoBehaviour {
         PuzzleTutorial.Draw => "Click and drag to draw a road that goes straight from one edge to the other.",
         PuzzleTutorial.Turn => "Pick up a star to turn in the indicated direction.",
         PuzzleTutorial.Wait => "You can turn as soon as you grab a star,\nor you can wait until later.",
-        PuzzleTutorial.Multi => "You can turn multiple times with a single star.",
+        PuzzleTutorial.Multi => "You can use a single star to turn many times.",
         PuzzleTutorial.Loop => "You'll often need to draw\na road that crosses itself.",
-        PuzzleTutorial.Force => "",
+        PuzzleTutorial.Force => "Stars with a \"!\" will always turn if they can.",
     };
 }
 

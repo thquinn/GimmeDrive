@@ -24,17 +24,22 @@ public class PuzzleUIScript : MonoBehaviour {
 
     public void ClickBack() {
         LevelSelectUIScript.instance.QuitPuzzle();
+        SFXScript.SFXButton();
     }
     public void ClickPlay() {
         CarScript.instance.TogglePlay();
+        SFXScript.SFXButton();
     }
     public void ClickUndo() {
         RoadInputScript.instance.Undo();
+        SFXScript.SFXButton();
     }
     public void ClickRedo() {
         RoadInputScript.instance.Redo();
+        SFXScript.SFXButton();
     }
     public void ClickClear() {
         RoadInputScript.instance.Clear();
+        SFXScript.SFXButton();
     }
 }

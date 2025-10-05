@@ -100,6 +100,7 @@ public class RoadInputScript : MonoBehaviour {
         bool roadState = roads[coor.x, coor.y];
         bool onEdge = coor.x == 0 || coor.y == 0 || coor.x == roads.GetLength(0) - 1 || coor.y == roads.GetLength(1) - 1;
         if (onEdge && !roadState && puzzleScript.entryCoors.Count >= 2) return;
+        if (puzzleScript.IsBlocked(coor, horizontal)) return;
         if (!undoOperation && drawState == DrawState.Undetermined) {
             drawState = roadState ? DrawState.Erasing : DrawState.Drawing;
         }
@@ -117,6 +118,11 @@ public class RoadInputScript : MonoBehaviour {
         if (success && !undoOperation) {
             if (currentUndo == null) currentUndo = new();
             currentUndo.Add(new UndoEvent() { horizontal = horizontal, coor = coor });
+            if (drawState == DrawState.Drawing) {
+                SFXScript.SFXPlace();
+            } else {
+                SFXScript.SFXRemove();
+            }
         }
     }
     Vector2Int GetEntryCoor(bool horizontal, Vector2Int coor) {

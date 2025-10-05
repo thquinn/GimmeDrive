@@ -999,12 +999,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzleScript
   prefabPickup: {fileID: 4039945285501707693, guid: 42aa116964c22cb41a7e84e7ef849ac0, type: 3}
+  prefabBlock: {fileID: 598290771648662952, guid: 6326759fc1ba8fc438532b9aa093dec7, type: 3}
   materialGrid: {fileID: 2100000, guid: bc9565d0b473e9049936bc78ea065bbe, type: 2}
   puzzles: {fileID: 11400000, guid: f1a779a4405c0a5418d77ee94281049a, type: 2}
   carScript: {fileID: 1903286644977313078}
   grid: {fileID: 2028647669227101029}
   puzzleName: 
   entryCoors: []
+  won: 0
 --- !u!1 &4102204386000382449
 GameObject:
   m_ObjectHideFlags: 0

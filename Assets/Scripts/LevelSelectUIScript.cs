@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class LevelSelectUIScript : MonoBehaviour
@@ -10,6 +11,8 @@ public class LevelSelectUIScript : MonoBehaviour
 
     public Puzzles puzzles;
     public Transform levelGrid;
+    public GameObject totalScoreIcon;
+    public TMP_Text totalScoreLabel;
 
     bool hidden;
     Dictionary<string, int> pathScores;
@@ -23,6 +26,20 @@ public class LevelSelectUIScript : MonoBehaviour
 
     void Update() {
         transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hidden ? POSITION_HIDDEN : Vector3.zero, ref v, 0.25f);
+        // Update total score.
+        int totalScore = GetTotalScore();
+        totalScoreIcon.SetActive(totalScore > 0);
+        totalScoreLabel.gameObject.SetActive(totalScore > 0);
+        totalScoreLabel.text = totalScore.ToString();
+    }
+    int GetTotalScore() {
+        int total = 0;
+        foreach (PuzzleEntry puzzleEntry in puzzles.puzzleStrings) {
+            string puzzleName = puzzleEntry.name;
+            if (!pathScores.ContainsKey(puzzleName)) return -1;
+            total += pathScores[puzzleName];
+        }
+        return total;
     }
 
     void PopulateLevels() {

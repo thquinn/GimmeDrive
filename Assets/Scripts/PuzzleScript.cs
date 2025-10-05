@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class PuzzleScript : MonoBehaviour {
     public static PuzzleScript instance;
 
-    public GameObject prefabPickup;
+    public GameObject prefabPickup, prefabBlock;
     public Material materialGrid;
     public Puzzles puzzles;
 
@@ -31,7 +32,11 @@ public class PuzzleScript : MonoBehaviour {
             for (int y = 0; y < puzzle.height; y++) {
                 PuzzleSpace space = puzzle.spaces[x, y];
                 if (space != PuzzleSpace.Empty) {
-                    Instantiate(prefabPickup, transform).GetComponent<PickupScript>().Init(this, new Vector2Int(x, y));
+                    if (space == PuzzleSpace.Block) {
+                        Instantiate(prefabBlock, transform).transform.localPosition = new Vector3(x, 0, -y);
+                    } else {
+                        Instantiate(prefabPickup, transform).GetComponent<PickupScript>().Init(this, new Vector2Int(x, y));
+                    }
                 }
             }
         }
@@ -56,6 +61,13 @@ public class PuzzleScript : MonoBehaviour {
             if (road) count++;
         }
         return count;
+    }
+    public bool IsBlocked(Vector2Int coor, bool horizontal) {
+        coor.x--;
+        coor.y--;
+        if (GetSpace(coor) == PuzzleSpace.Block) return true;
+        coor += horizontal ? Vector2Int.right : Vector2Int.up;
+        return GetSpace(coor) == PuzzleSpace.Block;
     }
 
     public PuzzleSpace GetSpace(Vector2Int coor) {

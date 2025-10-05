@@ -41,12 +41,12 @@ MonoBehaviour:
       ....
 
       tut Wait'
-  - name: trisection
+  - name: you turn
     content: '...
 
       ...
 
-      r.l
+      rXl
 
       tut Multi'
   - name: knot theory
@@ -141,7 +141,7 @@ MonoBehaviour:
       ...l.r.
 
       .......'
-  - name: exclam
+  - name: erstwhile bivalve
     content: 'l...l
 
       ....r
@@ -154,7 +154,43 @@ MonoBehaviour:
 
       tut
       Force'
-  - name: final
+  - name: interrobang
+    content: '.r...
+
+      ..r..
+
+      rLL..
+
+      ....l'
+  - name: haring
+    content: '.r....
+
+      ....l.
+
+      ....L.
+
+      ......
+
+      rlR.r.
+
+      ...l..'
+  - name: monstrian
+    content: 'l......r
+
+      .r....l.
+
+      ........
+
+      ........
+
+      ........
+
+      ........
+
+      .l....r.
+
+      l......r'
+  - name: end of the line
     content: 'r...r.
 
       .l....
@@ -163,4 +199,4 @@ MonoBehaviour:
 
       ..r...
 
-      ...l..'
+      .....l'

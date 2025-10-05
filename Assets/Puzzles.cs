@@ -44,11 +44,12 @@ public class Puzzle {
                 if (c == 'L') spaces[x, y] = PuzzleSpace.LeftForce;
                 if (c == 'r') spaces[x, y] = PuzzleSpace.Right;
                 if (c == 'R') spaces[x, y] = PuzzleSpace.RightForce;
+                if (c == 'X') spaces[x, y] = PuzzleSpace.Block;
             }
         }
     }
 }
 
 public enum PuzzleSpace {
-    Empty, Left, LeftForce, Right, RightForce
+    Empty, Left, LeftForce, Right, RightForce, Block
 }

@@ -188,7 +188,7 @@ public class CarScript : MonoBehaviour {
         for (int x = 0; x < puzzleScript.puzzle.width; x++) {
             for (int y = 0; y < puzzleScript.puzzle.width; y++) {
                 Vector2Int coor = new Vector2Int(x, y);
-                if (puzzleScript.GetSpace(coor) != PuzzleSpace.Empty && !pickupCoors.Contains(coor)) {
+                if (IsPickup(puzzleScript.GetSpace(coor)) && !pickupCoors.Contains(coor)) {
                     state = CarState.LeftIncomplete;
                     return;
                 }
@@ -202,8 +202,13 @@ public class CarScript : MonoBehaviour {
             PuzzleScript.instance.won = true;
         }
     }
+    bool IsPickup (PuzzleSpace space) {
+        if (space == PuzzleSpace.Empty || space == PuzzleSpace.Block) return false;
+        return true;
+    }
 
-    public bool IsGoing() {
+    public bool IsGoing(bool actually = false) {
+        if (actually) return state == CarState.Going;
         return state != CarState.Waiting;
     }
     public bool PickingUp(Vector2Int coor) {
