@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Assets.Code {
     public static class Util {
         public static Vector2Int INVALID_COOR = new Vector2Int(-999, -999);
-        public static float STRAIGHT_SIZE = 0.4f;
+        public static float STRAIGHT_SIZE = 0.5f;
         public static Quaternion GetRotationFromDirection(Vector2Int direction) {
             if (direction.x == 1) return Quaternion.identity;
             if (direction.y == 1) return Quaternion.Euler(0, 90, 0);
@@ -43,12 +43,11 @@ namespace Assets.Code {
             bool turnBefore = from - last != to - from;
             bool turnAfter = to - from != next - to;
             // Mirror.
-            if (turnBefore) {
-                // TODO: Broken with turns before AND after.
+            if (turnBefore && t < 0.5f) {
                 return SetTurningTransform(transform, next, to, from, last, 1 - t, true);
             }
             // Straight portion of the turn.
-            if (t < STRAIGHT_SIZE) {
+            if (t < STRAIGHT_SIZE || !turnAfter) {
                 SetStraightTransform(transform, from, to, t);
                 if (flipRot) transform.Rotate(0, 180, 0);
                 return 1;
@@ -58,7 +57,6 @@ namespace Assets.Code {
             t = (t - STRAIGHT_SIZE) / (1 - STRAIGHT_SIZE);
             float curveRadius = 1 - STRAIGHT_SIZE;
             float radians = 45 * Mathf.Deg2Rad * t;
-            // TODO: Horizontal left turns and vertical right turns are messed up.
             Vector2Int startDirection = to - from;
             Vector2Int endDirection = next - to;
             Vector2Int dDirection = endDirection - startDirection;
@@ -76,7 +74,7 @@ namespace Assets.Code {
             endRotation = Quaternion.Lerp(startRotation, endRotation, 0.5f);
             transform.localRotation = Quaternion.Lerp(startRotation, endRotation, t);
             if (flipRot) transform.Rotate(0, 180, 0);
-            return 1.0f; // TODO: Slow this down.
+            return 1.0f; // TODO: Slow this down.?
         }
     }
 }

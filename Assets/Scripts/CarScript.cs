@@ -62,13 +62,13 @@ public class CarScript : MonoBehaviour {
 
     void Going() {
         visuals.SetActive(true);
-        bool turning = Util.IsTurn(last, from, to) || Util.IsTurn(from, to, next);
-        if (to == from) turning = false;
         while (t >= 1) {
             ArriveAtCoor();
             t--;
         }
         // Set transform.
+        bool turning = Util.IsTurn(last, from, to) || Util.IsTurn(from, to, next);
+        if (to == from) turning = false;
         if (turning) {
             float tMult = Util.SetTurningTransform(transform, last, from, to, next, t);
             t += Time.deltaTime * speed * tMult;
