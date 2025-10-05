@@ -194,7 +194,7 @@ public class CarScript : MonoBehaviour {
                 }
             }
         }
-        if (!usedActivePickup) {
+        if (activePickup != PuzzleSpace.Empty && !usedActivePickup) {
             state = CarState.LeftUnused;
         } else {
             state = CarState.Won;

@@ -14,12 +14,14 @@ public class CameraScript : MonoBehaviour {
 
     private void Update() {
         // Input.
-        distance *= Mathf.Pow(scrollSensitivity, Input.mouseScrollDelta.y);
-        distance = Mathf.Clamp(distance, zoomRange.x, zoomRange.y);
-        if (Input.GetMouseButton(1) || Input.GetMouseButton(2)) {
-            horizontalAngle -= Input.GetAxis("Mouse X") * sensitivity;
-            verticalAngle -= Input.GetAxis("Mouse Y") * sensitivity;
-            verticalAngle = Mathf.Clamp(verticalAngle, Mathf.PI * .1f, Mathf.PI * .49f);
+        if (PuzzleScript.instance != null) {
+            distance *= Mathf.Pow(scrollSensitivity, Input.mouseScrollDelta.y);
+            distance = Mathf.Clamp(distance, zoomRange.x, zoomRange.y);
+            if (Input.GetMouseButton(1) || Input.GetMouseButton(2)) {
+                horizontalAngle -= Input.GetAxis("Mouse X") * sensitivity;
+                verticalAngle -= Input.GetAxis("Mouse Y") * sensitivity;
+                verticalAngle = Mathf.Clamp(verticalAngle, Mathf.PI * .1f, Mathf.PI * .49f);
+            }
         }
 
         // Look at.

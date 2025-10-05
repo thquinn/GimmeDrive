@@ -9,7 +9,6 @@ public class LevelSelectUIScript : MonoBehaviour
     public GameObject prefabLevelCell, prefabPuzzle;
 
     public Puzzles puzzles;
-    public string[] puzzleNames;
     public Transform levelGrid;
 
     bool hidden;
@@ -31,7 +30,8 @@ public class LevelSelectUIScript : MonoBehaviour
             if (child.GetSiblingIndex() == 0) continue;
             Destroy(child.gameObject);
         }
-        foreach (string puzzleName in puzzleNames) {
+        foreach (PuzzleEntry puzzleEntry in puzzles.puzzleStrings) {
+            string puzzleName = puzzleEntry.name;
             Puzzle puzzle = puzzles.GetPuzzleWithName(puzzleName);
             if (puzzle == null) {
                 Debug.Log($"Missing puzzle \"{puzzleName}\".");

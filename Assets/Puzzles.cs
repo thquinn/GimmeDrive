@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,10 +25,16 @@ public class Puzzles : ScriptableObject {
 public class Puzzle {
     public int width, height;
     public PuzzleSpace[,] spaces;
+    PuzzleTutorial tutorial;
     public Puzzle(string puzzleString) {
-        string[] lines = puzzleString.Split(new string[] { "\r\n", "\r", "\n" }, System.StringSplitOptions.None);
+        List<string> lines = new List<string>(puzzleString.Split(new string[] { "\r\n", "\r", "\n" }, System.StringSplitOptions.None));
+        while (lines[lines.Count - 1].Contains(' ')) {
+            string[] tokens = lines[lines.Count - 1].Split(' ');
+            lines.RemoveAt(lines.Count - 1);
+            if (tokens[0] == "tut") tutorial = (PuzzleTutorial) Enum.Parse(typeof(PuzzleTutorial), tokens[1]);
+        }
         width = lines[0].Length;
-        height = lines.Length;
+        height = lines.Count;
         spaces = new PuzzleSpace[width, height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -43,4 +50,7 @@ public class Puzzle {
 
 public enum PuzzleSpace {
     Empty, Left, LeftForce, Right, RightForce
+}
+public enum PuzzleTutorial {
+    None, Draw, Turn, Wait, Loop, Force
 }

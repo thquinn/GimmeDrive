@@ -1,6 +1,4 @@
-using NUnit.Framework;
 using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
 
 public class PuzzleScript : MonoBehaviour {

@@ -13,11 +13,65 @@ MonoBehaviour:
   m_Name: Puzzles
   m_EditorClassIdentifier: Assembly-CSharp::Puzzles
   puzzleStrings:
-  - name: ez
-    content: '.l
+  - name: nothing
+    content: '.....
 
-      ..'
-  - name: simple_loop
+      .....
+
+      .....
+
+      .....
+
+      tut Draw'
+  - name: here's the thing
+    content: '...
+
+      .l.
+
+      ...
+
+      tut Turn'
+  - name: patience
+    content: '....
+
+      .r..
+
+      ..l.
+
+      ....
+
+      tut Wait'
+  - name: knot theory
+    content: '......
+
+      .r..r.
+
+      ......
+
+      tut Loop'
+  - name: variety pack
+    content: '......
+
+      ..l...
+
+      ....r.
+
+      .l.l..
+
+      ....l.
+
+      ......'
+  - name: squeeze
+    content: '...
+
+      .r.
+
+      l.l
+
+      .l.
+
+      ...'
+  - name: hitch
     content: '......
 
       .l..l.
@@ -29,8 +83,71 @@ MonoBehaviour:
       .l..l.
 
       ......'
+  - name: latch and key
+    content: '..l..
+
+      ..r..
+
+      ..r..
+
+      ..l..
+
+      ..r..'
+  - name: malcolm
+    content: '...l..
+
+      ..l...
+
+      ..rrl.
+
+      ..rr..
+
+      .r....
+
+      ..l...'
+  - name: good cop
+    content: '.......
+
+      .r..lr.
+
+      .....l.
+
+      .l.r...
+
+      .......
+
+      ...l.r.
+
+      .......'
+  - name: mr. echt
+    content: '.......
+
+      .r..rl.
+
+      .....r.
+
+      .l.r...
+
+      .......
+
+      ...l.r.
+
+      .......'
+  - name: exclam
+    content: 'l...l
+
+      ....r
+
+      ..r..
+
+      .....
+
+      l...L
+
+      tut
+      Force'
   - name: final
-    content: 'r...R.
+    content: 'r...r.
 
       .l....
 
