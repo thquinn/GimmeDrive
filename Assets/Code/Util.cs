@@ -42,6 +42,7 @@ namespace Assets.Code {
             }
             bool turnBefore = from - last != to - from;
             bool turnAfter = to - from != next - to;
+            // TODO: Tighten the corners to STRAIGHT_SIZE = 0.4f without breaking mirroring/lerping.
             // Mirror.
             if (turnBefore && t < 0.5f) {
                 return SetTurningTransform(transform, next, to, from, last, 1 - t, true);
@@ -74,7 +75,8 @@ namespace Assets.Code {
             endRotation = Quaternion.Lerp(startRotation, endRotation, 0.5f);
             transform.localRotation = Quaternion.Lerp(startRotation, endRotation, t);
             if (flipRot) transform.Rotate(0, 180, 0);
-            return 1.0f; // TODO: Slow this down.?
+            Debug.Log(t);
+            return 1.0f; // TODO: Slow this down?
         }
     }
 }
