@@ -199,7 +199,8 @@ public class CarScript : MonoBehaviour {
         } else {
             state = CarState.Won;
             LevelSelectUIScript.instance.SetPathScore(puzzleScript.puzzleName, puzzleScript.PathCount());
-            PuzzleScript.instance.won = true;
+            puzzleScript.SaveSolution();
+            puzzleScript.won = true;
         }
     }
     bool IsPickup (PuzzleSpace space) {

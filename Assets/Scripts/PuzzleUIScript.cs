@@ -6,10 +6,12 @@ public class PuzzleUIScript : MonoBehaviour {
     public static PuzzleUIScript instance;
     static Vector3 HIDDEN_POSITION = new Vector3(0, 200, 0);
 
-    public TMP_Text tmpLevelName;
+    public TMP_Text tmpLevelName, tmpPathCount;
     public Slider speedSlider;
+    public CanvasGroup cgPathCount;
 
     Vector3 v;
+    float vPathCountAlpha;
 
     void Start() {
         instance = this;
@@ -20,6 +22,9 @@ public class PuzzleUIScript : MonoBehaviour {
         transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hidden ? HIDDEN_POSITION : Vector3.zero, ref v, 0.25f);
         if (hidden) return;
         tmpLevelName.text = $"\"{PuzzleScript.instance.puzzleName}\"";
+        int pathCount = PuzzleScript.instance.PathCount();
+        tmpPathCount.text = pathCount.ToString();
+        cgPathCount.alpha = Mathf.SmoothDamp(cgPathCount.alpha, pathCount == 0 ? 0 : 1, ref vPathCountAlpha, 0.2f);
     }
 
     public void ClickBack() {

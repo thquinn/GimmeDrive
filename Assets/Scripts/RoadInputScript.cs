@@ -40,6 +40,8 @@ public class RoadInputScript : MonoBehaviour {
             Undo();
         } else if (Input.GetKeyDown(KeyCode.Y) || Input.GetKeyDown(KeyCode.X)) {
             Redo();
+        } else if (Input.GetKeyDown(KeyCode.R)) {
+            Clear();
         }
         for (int x = -1; x < puzzleScript.puzzle.width + 1; x++) {
             for (int y = -1; y < puzzleScript.puzzle.height + 1; y++) {
@@ -177,7 +179,6 @@ public class RoadInputScript : MonoBehaviour {
         return false;
     }
     public void Clear() {
-        if (undoHistory.Count == 0) return;
         List<UndoEvent> undos = new();
         for (int x = 0; x < puzzleScript.roadsHorizontal.GetLength(0); x++) {
             for (int y = 0; y < puzzleScript.roadsHorizontal.GetLength(1); y++) {

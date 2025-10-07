@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor;
 using UnityEngine;
 
@@ -43,6 +45,7 @@ public class PuzzleScript : MonoBehaviour {
         grid.transform.localScale = new Vector3(puzzle.width + 1.5f, puzzle.height + 1.5f, 1);
         grid.transform.position = Vector3.zero;
         materialGrid.SetVector("_GridOffset", new Vector2(puzzle.width % 2 == 1 ? 0 : 0.5f, puzzle.height % 2 == 1 ? 0 : 0.5f));
+        LoadSolution();
     }
     public bool HasLeftConnection(Vector2Int coor) { return HasConnection(roadsHorizontal, coor.x, coor.y + 1); }
     public bool HasRightConnection(Vector2Int coor) { return HasConnection(roadsHorizontal, coor.x + 1, coor.y + 1); }
@@ -82,12 +85,56 @@ public class PuzzleScript : MonoBehaviour {
         return direction.y == 0 ? HasRightConnection(coor) : HasBottomConnection(coor);
     }
 
-    void Update() {
-        
+    public void SaveSolution() {
+        SaveData data = new SaveData(roadsHorizontal, roadsVertical, entryCoors);
+        string key = puzzleName + "_state";
+        PlayerPrefs.SetString(key, JsonUtility.ToJson(data));
+        PlayerPrefs.Save();
+    }
+    public void LoadSolution() {
+        string key = puzzleName + "_state";
+        if (!PlayerPrefs.HasKey(key)) return;
+        SaveData data = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString(key));
+        roadsHorizontal = data.GetRoadsHorizontal();
+        roadsVertical = data.GetRoadsVertical();
+        entryCoors = data.entryCoors;
     }
 
     public void Finish() {
         instance = null;
         Destroy(gameObject);
+    }
+}
+
+[Serializable]
+class SaveData {
+    public int rhWidth, rvWidth;
+    public bool[] rh, rv;
+    public List<Vector2Int> entryCoors;
+
+    public SaveData(bool[,] roadsHorizontal, bool[,] roadsVertical, List<Vector2Int> entryCoors) {
+        rhWidth = roadsHorizontal.GetLength(0);
+        rh = new bool[roadsHorizontal.Length];
+        for (int i = 0; i < rh.Length; i++) rh[i] = roadsHorizontal[i % rhWidth, i / rhWidth];
+        rvWidth = roadsVertical.GetLength(0);
+        rv = new bool[roadsVertical.Length];
+        for (int i = 0; i < rv.Length; i++) rv[i] = roadsVertical[i % rvWidth, i / rvWidth];
+        this.entryCoors = entryCoors;
+    }
+    public bool[,] GetRoadsHorizontal() {
+        return GetRoads(rh, rhWidth);
+    }
+    public bool[,] GetRoadsVertical() {
+        return GetRoads(rv, rvWidth);
+    }
+    bool[,] GetRoads(bool[] arr, int width) {
+        int height = arr.Length / width;
+        bool[,] ret = new bool[width, height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                ret[x, y] = arr[y * width + x];
+            }
+        }
+        return ret;
     }
 }

@@ -15,12 +15,10 @@ public class LevelSelectUIScript : MonoBehaviour
     public TMP_Text totalScoreLabel;
 
     bool hidden;
-    Dictionary<string, int> pathScores;
     Vector3 v;
 
     void Start() {
         instance = this;
-        pathScores = new();
         PopulateLevels();
     }
 
@@ -36,8 +34,8 @@ public class LevelSelectUIScript : MonoBehaviour
         int total = 0;
         foreach (PuzzleEntry puzzleEntry in puzzles.puzzleStrings) {
             string puzzleName = puzzleEntry.name;
-            if (!pathScores.ContainsKey(puzzleName)) return -1;
-            total += pathScores[puzzleName];
+            if (GetPathScore(puzzleName) == -1) return -1;
+            total += GetPathScore(puzzleName);
         }
         return total;
     }
@@ -70,11 +68,16 @@ public class LevelSelectUIScript : MonoBehaviour
     }
 
     public int GetPathScore(string puzzleName) {
-        if (pathScores.ContainsKey(puzzleName)) return pathScores[puzzleName];
+        string key = puzzleName + "_score";
+        if (PlayerPrefs.HasKey(key)) return PlayerPrefs.GetInt(key);
         return -1;
     }
     public void SetPathScore(string puzzleName, int score) {
-        if (!pathScores.ContainsKey(puzzleName)) pathScores[puzzleName] = score;
-        pathScores[puzzleName] = Mathf.Min(pathScores[puzzleName], score);
+        int previousScore = GetPathScore(puzzleName);
+        if (previousScore == -1 || score < previousScore) {
+            string key = puzzleName + "_score";
+            PlayerPrefs.SetInt(key, score);
+            PlayerPrefs.Save();
+        }
     }
 }
