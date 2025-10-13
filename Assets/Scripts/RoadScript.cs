@@ -5,9 +5,10 @@ public class RoadScript : MonoBehaviour {
     static float EDGE_SCALE = 5;
 
     public Material materialRoadFade;
-    public MeshFilter meshFilter;
+    public MeshFilter meshFilter, meshGlowFilter;
     public MeshRenderer meshRenderer;
     public Mesh meshCross, meshCurve, meshEnd, meshStraight, meshT;
+    public Mesh meshGlowCross, meshGlowCurve, meshGlowEnd, meshGlowStraight, meshGlowT;
 
     PuzzleScript puzzleScript;
     Vector2Int coor;
@@ -48,18 +49,22 @@ public class RoadScript : MonoBehaviour {
             else transform.localRotation = Quaternion.Euler(0, 270, 0);
             if (edge) {
                 meshFilter.mesh = meshStraight;
+                meshGlowFilter.mesh = meshGlowStraight;
                 edgeScale = Mathf.SmoothDamp(edgeScale, EDGE_SCALE, ref vScale, 0.1f);
                 transform.localScale = new Vector3(edgeScale, 1, 1);
                 transform.localPosition = initialPosition - transform.right * ((edgeScale - 1) / 2);
             } else {
                 meshFilter.mesh = meshEnd;
+                meshGlowFilter.mesh = meshGlowEnd;
             }
         } else if (numConnections == 2) {
             if ((left && right) || (top && bottom)) {
                 meshFilter.mesh = meshStraight;
+                meshGlowFilter.mesh = meshGlowStraight;
                 transform.localRotation = left ? Quaternion.identity : Quaternion.Euler(0, 90, 0);
             } else {
                 meshFilter.mesh = meshCurve;
+                meshGlowFilter.mesh = meshGlowCurve;
                 if (right && bottom) transform.localRotation = Quaternion.identity;
                 else if (left && bottom) transform.localRotation = Quaternion.Euler(0, 90, 0);
                 else if (left && top) transform.localRotation = Quaternion.Euler(0, 180, 0);
@@ -67,12 +72,14 @@ public class RoadScript : MonoBehaviour {
             }
         } else if (numConnections == 3) {
             meshFilter.mesh = meshT;
+            meshGlowFilter.mesh = meshGlowT;
             if (!left) transform.localRotation = Quaternion.identity;
             else if (!top) transform.localRotation = Quaternion.Euler(0, 90, 0);
             else if (!right) transform.localRotation = Quaternion.Euler(0, 180, 0);
             else transform.localRotation = Quaternion.Euler(0, 270, 0);
         } else {
             meshFilter.mesh = meshCross;
+            meshGlowFilter.mesh = meshGlowCross;
         }
     }
 }

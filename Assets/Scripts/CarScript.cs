@@ -10,13 +10,17 @@ using UnityEngine;
 public class CarScript : MonoBehaviour {
     public static CarScript instance;
 
+    public Material materialRoadGlow;
+
     public PuzzleScript puzzleScript;
     public GameObject visuals;
     public Transform pickupAnchor;
     public SpriteRenderer srSpeech;
     public TMP_Text tmpSpeech;
+    public ParticleSystem particlesExhaust;
 
     float vSpeechAlpha;
+    float initialExhaustSimSpeed;
 
     CarState state;
     Vector2Int direction;
@@ -31,6 +35,7 @@ public class CarScript : MonoBehaviour {
         pickupCoors = new List<Vector2Int>();
         srSpeech.SetAlpha(0);
         tmpSpeech.SetAlpha(0);
+        initialExhaustSimSpeed = particlesExhaust.main.simulationSpeed;
     }
 
     void Update() {
@@ -55,7 +60,9 @@ public class CarScript : MonoBehaviour {
             tmpSpeech.text = "I crashed. :(";
         } else if (state == CarState.DidntUsePickup) {
             tmpSpeech.text = "I need to turn with this star before collecting another!";
-        } else if (state == CarState.LeftIncomplete) {
+        } else if (state == CarState.LeftIncompleteSingle) {
+            tmpSpeech.text = "I left a star behind!";
+        } else if (state == CarState.LeftIncompleteMulti) {
             tmpSpeech.text = "I left some stars behind!";
         } else if (state == CarState.LeftUnused) {
             tmpSpeech.text = "I need to turn with this star!";
@@ -63,8 +70,19 @@ public class CarScript : MonoBehaviour {
             tmpSpeech.text = "";
         }
         float a = Mathf.SmoothDamp(srSpeech.color.a, tmpSpeech.text.Length > 0 ? 1 : 0, ref vSpeechAlpha, .2f);
+        if (tmpSpeech.text.Length == 0) {
+            a = 0;
+            vSpeechAlpha = 0;
+        }
         srSpeech.SetAlpha(a);
         tmpSpeech.SetAlpha(a);
+        if (IsGoing(true) && !particlesExhaust.isPlaying) particlesExhaust.Play();
+        else if (!IsGoing(true) && particlesExhaust.isPlaying) particlesExhaust.Stop();
+        var exhaustMain = particlesExhaust.main;
+        exhaustMain.simulationSpeed = initialExhaustSimSpeed * PuzzleUIScript.instance.speedSlider.value;
+        materialRoadGlow.SetVector("_CarLocation", visuals.activeSelf ? transform.position : new Vector3(-999, -999, -999));
+        float yRadians = transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
+        materialRoadGlow.SetVector("_CarDirection", new Vector2(Mathf.Cos(yRadians), -Mathf.Sin(yRadians)));
     }
 
     public void TogglePlay() {
@@ -185,21 +203,31 @@ public class CarScript : MonoBehaviour {
         return direction;
     }
     void SetEndState() {
+        int incomplete = 0;
         for (int x = 0; x < puzzleScript.puzzle.width; x++) {
             for (int y = 0; y < puzzleScript.puzzle.width; y++) {
                 Vector2Int coor = new Vector2Int(x, y);
                 if (IsPickup(puzzleScript.GetSpace(coor)) && !pickupCoors.Contains(coor)) {
-                    state = CarState.LeftIncomplete;
-                    return;
+                    incomplete++;
+                    if (incomplete == 2) {
+                        state = CarState.LeftIncompleteMulti;
+                        return;
+                    }
                 }
             }
+        }
+        if (incomplete == 1) {
+            state = CarState.LeftIncompleteSingle;
+            return;
         }
         if (activePickup != PuzzleSpace.Empty && !usedActivePickup) {
             state = CarState.LeftUnused;
         } else {
             state = CarState.Won;
-            LevelSelectUIScript.instance.SetPathScore(puzzleScript.puzzleName, puzzleScript.PathCount());
-            puzzleScript.SaveSolution();
+            bool newBest =  LevelSelectUIScript.instance.SetPathScore(puzzleScript.puzzleName, puzzleScript.PathCount());
+            if (newBest) {
+                puzzleScript.SaveSolution();
+            }
             puzzleScript.won = true;
         }
     }
@@ -224,7 +252,11 @@ public class CarScript : MonoBehaviour {
     public bool PickupGone(Vector2Int coor) {
         if (!IsGoing()) return false;
         int index = pickupCoors.IndexOf(coor);
-        return index >= 0 && index < pickupCoors.Count - 1;
+        if (index == -1) return false;
+        if (index < pickupCoors.Count - 1) return true;
+        // Are we about to pick up a new pickup?
+        if (to != coor && t > .5f && !pickupCoors.Contains(to) && puzzleScript.GetSpace(to) != PuzzleSpace.Empty) return true;
+        return false;
     }
     public bool UsedActivePickup() {
         return usedActivePickup;
@@ -235,6 +267,7 @@ public enum CarState {
     Waiting, Going, Won,
     Crashed,
     DidntUsePickup,
-    LeftIncomplete,
+    LeftIncompleteSingle,
+    LeftIncompleteMulti,
     LeftUnused,
 }

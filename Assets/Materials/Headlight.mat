@@ -103,8 +103,8 @@ Material:
     m_Floats:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
-    - _AlphaMaxX: 0.18
-    - _AlphaMinX: -1.9
+    - _AlphaMaxX: 0.58
+    - _AlphaMinX: -1.61
     - _AlphaToMask: 0
     - _Blend: 2
     - _BlendModePreserveSpecular: 1

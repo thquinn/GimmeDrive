@@ -5,25 +5,31 @@ using UnityEngine;
 public class LevelSelectUIScript : MonoBehaviour
 {
     public static LevelSelectUIScript instance;
-    static Vector3 POSITION_HIDDEN = new Vector3(0, -1200, 0);
+    static Vector3 POSITION_HIDDEN = new Vector3(0, -500, 0);
 
     public GameObject prefabLevelCell, prefabPuzzle;
 
     public Puzzles puzzles;
+    public CanvasGroup canvasGroup;
     public Transform levelGrid;
     public GameObject totalScoreIcon;
     public TMP_Text totalScoreLabel;
 
     bool hidden;
     Vector3 v;
+    float vAlpha;
 
     void Start() {
         instance = this;
         PopulateLevels();
+        transform.localPosition = POSITION_HIDDEN;
+        canvasGroup.alpha = 0;
     }
 
     void Update() {
-        transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hidden ? POSITION_HIDDEN : Vector3.zero, ref v, 0.25f);
+        transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hidden ? POSITION_HIDDEN : Vector3.zero, ref v, 0.2f);
+        canvasGroup.alpha = Mathf.SmoothDamp(canvasGroup.alpha, hidden ? 0 : 1, ref vAlpha, 0.1f);
+        canvasGroup.interactable = !hidden;
         // Update total score.
         int totalScore = GetTotalScore();
         totalScoreIcon.SetActive(totalScore > 0);
@@ -62,6 +68,7 @@ public class LevelSelectUIScript : MonoBehaviour
         hidden = true;
     }
     public void QuitPuzzle() {
+        if (PuzzleScript.instance == null) return;
         PuzzleScript.instance.Finish();
         hidden = false;
         PopulateLevels();
@@ -72,12 +79,14 @@ public class LevelSelectUIScript : MonoBehaviour
         if (PlayerPrefs.HasKey(key)) return PlayerPrefs.GetInt(key);
         return -1;
     }
-    public void SetPathScore(string puzzleName, int score) {
+    public bool SetPathScore(string puzzleName, int score) {
         int previousScore = GetPathScore(puzzleName);
-        if (previousScore == -1 || score < previousScore) {
+        if (previousScore == -1 || score <= previousScore) {
             string key = puzzleName + "_score";
             PlayerPrefs.SetInt(key, score);
             PlayerPrefs.Save();
+            return true;
         }
+        return false;
     }
 }

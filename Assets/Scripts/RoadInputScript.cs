@@ -36,13 +36,6 @@ public class RoadInputScript : MonoBehaviour {
             }
             drawState = DrawState.Undetermined;
         }
-        if (Input.GetKeyDown(KeyCode.Z)) {
-            Undo();
-        } else if (Input.GetKeyDown(KeyCode.Y) || Input.GetKeyDown(KeyCode.X)) {
-            Redo();
-        } else if (Input.GetKeyDown(KeyCode.R)) {
-            Clear();
-        }
         for (int x = -1; x < puzzleScript.puzzle.width + 1; x++) {
             for (int y = -1; y < puzzleScript.puzzle.height + 1; y++) {
                 Vector2Int coor = new Vector2Int(x, y);
@@ -91,7 +84,10 @@ public class RoadInputScript : MonoBehaviour {
         return Util.INVALID_COOR;
     }
     void TryToggle(bool horizontal, Vector2Int coor, bool undoOperation = false) {
-        if (carScript.IsGoing()) return;
+        if (carScript.IsGoing(true)) return;
+        if (carScript.IsGoing()) {
+            carScript.TogglePlay();
+        }
         bool[,] roads = horizontal ? puzzleScript.roadsHorizontal : puzzleScript.roadsVertical;
         if (horizontal) {
             if (coor.y == 0 || coor.y == roads.GetLength(1) - 1) return;

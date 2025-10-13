@@ -6921,6 +6921,8 @@ MonoBehaviour:
   sourceSFX: {fileID: 1039788862}
   sfxButton: {fileID: 8300000, guid: 6674e1349fa4b864199281d34ba55458, type: 3}
   sfxPlace: {fileID: 8300000, guid: 60addc65e0a45564a9c7a5d1b43dd2b5, type: 3}
+  sfxPulseLeft: {fileID: 8300000, guid: 31189448cb82eda4d937c86765489d80, type: 3}
+  sfxPulseRight: {fileID: 8300000, guid: 5f81649ee44bd89499a7c56663b2bdca, type: 3}
   sfxRemove: {fileID: 8300000, guid: 3f41266f437fb064597020e9b449c95f, type: 3}
 --- !u!82 &1039788864
 AudioSource:
@@ -12847,7 +12849,19 @@ MonoBehaviour:
   m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 256679397}
+        m_TargetAssemblyTypeName: PuzzleUIScript, Assembly-CSharp
+        m_MethodName: ChangeSpeed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1452169217
 GameObject:
   m_ObjectHideFlags: 0
@@ -13343,6 +13357,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1842420902}
   - component: {fileID: 1842420903}
+  - component: {fileID: 1842420904}
   m_Layer: 5
   m_Name: Level Select UI
   m_TagString: Untagged
@@ -13385,9 +13400,22 @@ MonoBehaviour:
   prefabLevelCell: {fileID: 4114828402225272433, guid: 6c5f4a9c128602a48bc20d0c56475097, type: 3}
   prefabPuzzle: {fileID: 3914865358566819310, guid: 80dbabc28c19fd047910973a6bdcf17f, type: 3}
   puzzles: {fileID: 11400000, guid: f1a779a4405c0a5418d77ee94281049a, type: 2}
+  canvasGroup: {fileID: 1842420904}
   levelGrid: {fileID: 1184986137}
   totalScoreIcon: {fileID: 1336406716}
   totalScoreLabel: {fileID: 1858422072}
+--- !u!225 &1842420904
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1842420901}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1858422070
 GameObject:
   m_ObjectHideFlags: 0
