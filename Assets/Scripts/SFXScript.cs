@@ -5,7 +5,7 @@ public class SFXScript : MonoBehaviour
     public static SFXScript instance;
 
     public AudioSource sourceEngine, sourceSFX;
-    public AudioClip sfxButton, sfxPlace, sfxPulseLeft, sfxPulseRight, sfxRemove;
+    public AudioClip sfxButton, sfxPlace, sfxPulseLeft, sfxPulseRight, sfxRedo, sfxRemove, sfxUndo;
 
     float vEngine;
 
@@ -29,5 +29,11 @@ public class SFXScript : MonoBehaviour
     }
     public static void SFXTurnPulse(bool right) {
         instance.sourceSFX.PlayOneShot(right ? instance.sfxPulseRight : instance.sfxPulseLeft, 0.15f);
+    }
+    public static void SFXUndo() {
+        instance.sourceSFX.PlayOneShot(instance.sfxUndo, 0.075f);
+    }
+    public static void SFXRedo() {
+        instance.sourceSFX.PlayOneShot(instance.sfxRedo, 0.125f);
     }
 }

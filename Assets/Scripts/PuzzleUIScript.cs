@@ -1,5 +1,7 @@
+using Assets.Code;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PuzzleUIScript : MonoBehaviour {
@@ -8,13 +10,13 @@ public class PuzzleUIScript : MonoBehaviour {
     static float HOTKEY_REPEAT_TIME = 0.1f;
     static Vector3 HIDDEN_POSITION = new Vector3(0, 200, 0);
 
-    public TMP_Text tmpLevelName, tmpPathCount;
+    public TMP_Text tmpLevelName, tmpPathCount, tmpSliderLabel;
     public Slider speedSlider;
     public CanvasGroup cgPathCount;
 
     float undoTimer, redoTimer;
     Vector3 v;
-    float vPathCountAlpha;
+    float vPathCountAlpha, vSliderLabelAlpha;
 
     void Start() {
         instance = this;
@@ -38,6 +40,10 @@ public class PuzzleUIScript : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Escape)) {
             LevelSelectUIScript.instance.QuitPuzzle();
         }
+        // Slider.
+        tmpSliderLabel.text = $"{speedSlider.value}<voffset=.1em>x";
+        bool sliderActive = EventSystem.current.currentSelectedGameObject == speedSlider.gameObject && Input.GetMouseButton(0);
+        tmpSliderLabel.SetAlpha(Mathf.SmoothDamp(tmpSliderLabel.color.a, sliderActive ? 1 : 0, ref vSliderLabelAlpha, 0.1f));
         // State.
         bool hidden = PuzzleScript.instance == null;
         transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hidden ? HIDDEN_POSITION : Vector3.zero, ref v, 0.2f);

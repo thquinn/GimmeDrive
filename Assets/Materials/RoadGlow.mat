@@ -130,9 +130,9 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.68391275, g: 0.6965959, b: 0.8805031, a: 0.03137255}
-    - _CarDirection: {r: -1, g: 0.00000008742278, b: 0, a: 0}
-    - _CarLocation: {r: 3.5, g: 0, b: -0.5, a: 0}
+    - _BaseColor: {r: 0.68391275, g: 0.6965959, b: 0.8805031, a: 0.023529412}
+    - _CarDirection: {r: -0.06940834, g: 0.99758834, b: 0, a: 0}
+    - _CarLocation: {r: -999, g: -999, b: -999, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _PingLocation: {r: 0, g: 0, b: 0, a: 0}

@@ -17,7 +17,11 @@ public class CameraScript : MonoBehaviour {
         if (PuzzleScript.instance != null) {
             distance *= Mathf.Pow(scrollSensitivity, Input.mouseScrollDelta.y);
             distance = Mathf.Clamp(distance, zoomRange.x, zoomRange.y);
-            if (Input.GetMouseButton(1) || Input.GetMouseButton(2)) {
+            bool mouseDown = Input.GetMouseButton(1) || Input.GetMouseButton(2);
+            DrawState drawState = RoadInputScript.instance.drawState;
+            mouseDown |= Input.GetMouseButton(0) && drawState == DrawState.Camera;
+            mouseDown &= drawState != DrawState.Drawing && drawState != DrawState.Erasing;
+            if (mouseDown) {
                 horizontalAngle -= Input.GetAxis("Mouse X") * sensitivity;
                 verticalAngle -= Input.GetAxis("Mouse Y") * sensitivity;
                 verticalAngle = Mathf.Clamp(verticalAngle, Mathf.PI * .1f, Mathf.PI * .49f);

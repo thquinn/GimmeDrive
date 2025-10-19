@@ -106,7 +106,8 @@ public class CarScript : MonoBehaviour {
         ArriveAtCoor();
         PuzzleScript.instance.won = false;
     }
-    void Stop() {
+    public void Stop() {
+        if (state == CarState.Waiting) return;
         state = CarState.Waiting;
         t = 0;
         activePickup = PuzzleSpace.Empty;

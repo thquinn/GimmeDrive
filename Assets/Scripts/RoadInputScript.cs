@@ -12,7 +12,7 @@ public class RoadInputScript : MonoBehaviour {
     public PuzzleScript puzzleScript;
     public CarScript carScript;
     Dictionary<Vector2Int, RoadScript> roads;
-    DrawState drawState;
+    [HideInInspector] public DrawState drawState;
     Vector2Int lastClickedCoor;
     Stack<List<UndoEvent>> undoHistory, redoHistory;
     List<UndoEvent> currentUndo;
@@ -50,8 +50,19 @@ public class RoadInputScript : MonoBehaviour {
     }
     void UpdateClick() {
         Vector2Int clickedCoor = GetClickedCoor();
-        if (clickedCoor == Util.INVALID_COOR) return;
-        if (Input.GetMouseButtonDown(0)) lastClickedCoor = clickedCoor;
+        if (clickedCoor == Util.INVALID_COOR) {
+            if (drawState == DrawState.Undetermined && Application.isMobilePlatform) {
+                drawState = DrawState.Camera;
+            }
+            return;
+        }
+        if (drawState == DrawState.Camera) {
+            return;
+        }
+        if (Input.GetMouseButtonDown(0)) {
+            drawState = DrawState.Undetermined;
+            lastClickedCoor = clickedCoor;
+        }
         while (clickedCoor.x < lastClickedCoor.x) {
             lastClickedCoor.x--;
             TryToggle(true, lastClickedCoor);
@@ -79,7 +90,11 @@ public class RoadInputScript : MonoBehaviour {
             Vector3 position = ray.GetPoint(distance);
             Debug.DrawLine(position, position + new Vector3(0, 1, 0));
             position = transform.InverseTransformPoint(position);
-            return new Vector2Int(Mathf.FloorToInt(position.x + 1.5f), Mathf.FloorToInt(-position.z + 1.5f));
+            Vector2Int coor = new Vector2Int(Mathf.FloorToInt(position.x + 1.5f), Mathf.FloorToInt(-position.z + 1.5f));
+            if (coor.x < 0 || coor.x > puzzleScript.puzzle.width + 1 || coor.y < 0 || coor.y > puzzleScript.puzzle.height + 1) {
+                return Util.INVALID_COOR;
+            }
+            return coor;
         }
         return Util.INVALID_COOR;
     }
@@ -114,6 +129,7 @@ public class RoadInputScript : MonoBehaviour {
             success = true;
         }
         if (success && !undoOperation) {
+            CarScript.instance.Stop();
             if (currentUndo == null) currentUndo = new();
             currentUndo.Add(new UndoEvent() { horizontal = horizontal, coor = coor });
             if (drawState == DrawState.Drawing) {
@@ -143,6 +159,7 @@ public class RoadInputScript : MonoBehaviour {
         var undos = undoHistory.Pop();
         ApplyUndos(undos);
         redoHistory.Push(undos);
+        SFXScript.SFXUndo();
     }
     public void Redo() {
         if (redoHistory.Count == 0) return;
@@ -150,6 +167,7 @@ public class RoadInputScript : MonoBehaviour {
         var undos = redoHistory.Pop();
         ApplyUndos(undos);
         undoHistory.Push(undos);
+        SFXScript.SFXRedo();
     }
     void ApplyUndos(List<UndoEvent> undos) {
         foreach (UndoEvent undo in undos) {
@@ -198,8 +216,8 @@ public class RoadInputScript : MonoBehaviour {
     }
 }
 
-enum DrawState {
-    Undetermined, Drawing, Erasing
+public enum DrawState {
+    Undetermined, Drawing, Erasing, Camera
 }
 
 struct UndoEvent {

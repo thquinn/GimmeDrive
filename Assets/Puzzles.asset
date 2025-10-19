@@ -200,3 +200,33 @@ MonoBehaviour:
       ..r...
 
       .....l'
+  - name: cross station
+    content: '..l....
+
+      .......
+
+      ...R...
+
+      ..LlL..
+
+      ...R...
+
+      .......
+
+      .l.r.r.'
+  - name: link
+    content: 'l.l.
+
+      .l.R
+
+      l.L.
+
+      .l.l'
+  - name: malcolm jr.
+    content: '.l...
+
+      .rr..
+
+      lrr.l
+
+      ...r.'
